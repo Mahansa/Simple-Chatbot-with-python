@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        /* Styling dasar untuk chatbot */
+        body { font-family: Arial, sans-serif; }
+        #chatbox { width: 300px; height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; }
+        .message { margin: 5px 0; }
+        .user-message { color: blue; }
+        .bot-message { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Chatbot</h1>
+    <div id="chatbox"></div>
+    <input type="text" id="user-input" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        async function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            const chatbox = document.getElementById('chatbox');
+
+            if (userInput) {
+                // Display user message in chatbox
+                chatbox.innerHTML += `<div class="message user-message">You: ${userInput}</div>`;
+                document.getElementById('user-input').value = ''; // Clear input field
+
+                try {
+                    // Send request to Flask API
+                    const response = await fetch('http://127.0.0.1:5000/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ input: userInput })
+                    });
+
+                    // Cek apakah respons OK
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.response) {
+                            // Display chatbot response in chatbox
+                            chatbox.innerHTML += `<div class="message bot-message">Bot: ${data.response}</div>`;
+                        } else {
+                            chatbox.innerHTML += `<div class="message bot-message">Bot: Sorry, I didn't get that.</div>`;
+                        }
+                    } else {
+                        console.error("Error with the response:", response.status);
+                        chatbox.innerHTML += `<div class="message bot-message">Bot: Sorry, there was an error with the backend.</div>`;
+                    }
+                } catch (error) {
+                    console.error("Error sending request:", error);
+                    chatbox.innerHTML += `<div class="message bot-message">Bot: Error occurred while sending the message.</div>`;
+                }
+
+                // Scroll ke bawah agar chat terbaru terlihat
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
