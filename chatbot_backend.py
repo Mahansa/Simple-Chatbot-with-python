@@ -33,8 +33,8 @@ def chatbot_response(input_text, chat_history_ids=None):
     return response, chat_history_ids
 
 def search_internet(query):
-    api_key = "Use your own API" 
-    url = "Your-URL{query}&api_key={api_key}"
+    api_key = "YOUR_API_KEY_HERE"  # Replace with your actual API key
+    url = f"https://serpapi.com/search?q={query}&api_key={api_key}"  # Replace with your search URL (SerpAPI example)
     
     try:
         response = requests.get(url)
@@ -43,9 +43,9 @@ def search_internet(query):
             answer = search_results["organic_results"][0]["snippet"]
             return answer
         else:
-            return "Sorry i can't find anything on internet. Pls try again."
+            return "Sorry, I can't find anything on the internet. Please try again."
     except Exception as e:
-        return f"Can't find anything on in internet: {str(e)}"
+        return f"Can't find anything on the internet: {str(e)}"
 
 @app.route("/chat", methods=["POST"])
 def chat():
